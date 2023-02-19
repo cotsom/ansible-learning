@@ -1,0 +1,9 @@
+---
+- name: Create a text file
+  hosts: host1
+  tasks:
+    - name: Create file
+      file:
+        path: /tmp/sample.txt
+        state: touch
+      # become: yes
