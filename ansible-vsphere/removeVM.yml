@@ -1,0 +1,24 @@
+- name: Remove virtual machine
+  gather_facts: no
+  vars_files:
+    - vars/main.yml
+  vars:
+    ansible_python_interpreter: "/usr/bin/env python3"
+  hosts: localhost
+  tasks:
+    - set_fact:
+        vm_name: "{{ vm_name }}"
+        datacenter: ""
+
+    - name: Remove "{{ vm_name }}"
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        cluster: ""
+        name: "{{ vm_name }}"
+        state: absent
+        force: yes
+      delegate_to: localhost
+      register: facts

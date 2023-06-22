@@ -1,0 +1,13 @@
+---
+vcenter_hostname: ""
+vcenter_datacenter: ""
+vcenter_cluster: ""
+vcenter_validate_certs: false
+vcenter_username: ""
+vcenter_password: ""
+vm_name: "ansible-test"
+vcenter_destination_folder: ""
+# vm_state: "poweredon"
+vm_template: "Debian"
+vm_name: webTask
+vm_address: 10.10.124.5

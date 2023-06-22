@@ -1,0 +1,93 @@
+---
+- hosts: all
+  gather_facts: no
+  collections:
+    - community.vmware
+  pre_tasks:
+    - include_vars: vars/main.yml
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ vcenter_hostname }}"
+      username: "{{ vcenter_username }}"
+      password: "{{ vcenter_password }}"
+      validate_certs: False
+      name: "{{ vm_name }}"
+      template: Ubuntu
+      datacenter: "{{ vcenter_datacenter }}"
+      folder: "{{ vcenter_destination_folder }}"
+      cluster: "{{ vcenter_cluster }}"
+      datastore: ""
+      networks:
+      - name: ""
+        ip: "{{ vm_address }}"
+        netmask: 255.255.255.0
+        gateway: 10.10.124.254
+        type: static
+        dns_servers: 10.1.1.2
+      # customization:
+      #   hostname: "web02"
+      #   dns_servers:
+      #   - 10.1.1.2
+      #   - 1.1.1.1
+      state: poweredon
+      wait_for_ip_address: yes
+    delegate_to: localhost
+  - name: add dns
+    become: yes
+    lineinfile:
+        path: /etc/resolv.conf
+        line: "nameserver 8.8.8.8"
+        insertafter: EOF
+  - name: update packs
+    become: yes
+    apt:
+      update_cache: yes
+  - name: install dependences
+    become: yes
+    apt:
+      state: present
+      update_cache: yes
+      name:
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+        - python3-pip
+        - python3-setuptools
+  - name: install docker gpg key
+    become: yes
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+  - name: add docker repository
+    become: yes
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+  - name: install docker ce
+    become: yes
+    apt:
+      state: present
+      update_cache: yes
+      name:
+        - docker-ce 
+        - docker-ce-cli 
+        - containerd.io 
+        - docker-buildx-plugin 
+        - docker-compose-plugin
+  - name: Install docker-compose
+    become: yes
+    get_url:
+      url: https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-linux-x86_64
+      dest: /usr/local/bin/docker-compose
+      mode: '+x'
+  # - name: delivery tasks
+  #     synchronize:
+  #       src: /src/address
+  #       dest: /dest/address
+  #       recursive: yes
+  # - name: up tasks
+  #     community.docker.docker_compose:
+  #       project_src: /dest/address
+  #       state: present

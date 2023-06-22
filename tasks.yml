@@ -49,12 +49,9 @@
   hosts: all
   become: yes
   tasks:
-    - name: copy directory
-      synchronize:
-        src: /home/cotsom/Рабочий стол/CTF/ctf-tasks
-        dest: /home/vagrant/
-        recursive: yes  
-    - name: up tasks
-      community.docker.docker_compose:
-        project_src: /home/vagrant/ctf-tasks/lecture-tasks/
-        state: present
+    - name: pull&run containter
+      docker_container:
+        name: task
+        image: cotsom/lfi
+        ports:
+          - "8000:5000"

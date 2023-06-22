@@ -1,7 +1,7 @@
 all:
   hosts:
     main_host:
-      ansible_host: localhost
-      ansible_port: 2222
-      ansible_ssh_pass: vagrant
-      ansible_user: vagrant
+      ansible_host: 10.10.108.155
+      ansible_port: 22
+      ansible_ssh_pass: P@ssword
+      ansible_user: web
